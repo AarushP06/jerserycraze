@@ -10,23 +10,6 @@ import java.util.List;
 @Service
 public class JerseyService {
 
-    public Jersey update(Long id, JerseyRequest request) {
-        Jersey jersey = getById(id); // load from DB
-
-        jersey.setName(request.name());
-        jersey.setClub(request.club());
-        jersey.setType(request.type());
-        jersey.setSize(request.size());
-        jersey.setPrice(request.price());
-        jersey.setInStock(request.inStock());
-        jersey.setDescription(request.description());
-        jersey.setImageLink(request.imageLink());
-
-        return jerseyRepository.save(jersey);
-
-
-    }
-
     private final JerseyRepository jerseyRepository;
 
     public JerseyService(JerseyRepository jerseyRepository) {
@@ -59,6 +42,4 @@ public class JerseyService {
         }
         jerseyRepository.deleteById(id);
     }
-
-
 }

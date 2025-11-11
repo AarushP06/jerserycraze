@@ -1,4 +1,10 @@
 package com.champsoft.jerserycrazedatabase.presentation.dto.Customer;
 
-public class CustomerResponse {
+public record CustomerResponse(
+        Long id,
+        String firstName,
+        String lastName,
+        String email,
+        String address
+) {
 }

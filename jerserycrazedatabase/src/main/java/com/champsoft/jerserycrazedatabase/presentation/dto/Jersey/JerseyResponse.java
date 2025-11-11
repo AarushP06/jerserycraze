@@ -1,5 +1,4 @@
 package com.champsoft.jerserycrazedatabase.presentation.dto.Jersey;
-
 import java.math.BigDecimal;
 
 public record JerseyResponse(
