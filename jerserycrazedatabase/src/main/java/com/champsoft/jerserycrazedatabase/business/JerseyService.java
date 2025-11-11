@@ -1,6 +1,7 @@
 package com.champsoft.jerserycrazedatabase.business;
 import com.champsoft.jerserycrazedatabase.dataaccess.entity.Jersey;
 import com.champsoft.jerserycrazedatabase.dataaccess.repository.JerseyRepository;
+import com.champsoft.jerserycrazedatabase.exceptions_utilities.EntityNotFoundException;
 import com.champsoft.jerserycrazedatabase.presentation.dto.Jersey.JerseyRequest;
 import com.champsoft.jerserycrazedatabase.presentation.mapper.JerseyMapper;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class JerseyService {
 
     public Jersey getById(Long id) {
         return jerseyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Jersey " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Jersey " + id + " not found"));
     }
 
     public Jersey create(JerseyRequest request) {
@@ -38,7 +39,7 @@ public class JerseyService {
 
     public void delete(Long id) {
         if (!jerseyRepository.existsById(id)) {
-            throw new RuntimeException("Jersey " + id + " not found");
+            throw new EntityNotFoundException("Jersey " + id + " not found");
         }
         jerseyRepository.deleteById(id);
     }
