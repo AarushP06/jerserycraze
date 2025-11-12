@@ -2,7 +2,7 @@ package com.champsoft.jerserycrazedatabase.exceptions_utilities;
 public class DuplicateResourceException extends RuntimeException {
 
     public DuplicateResourceException(String message) {
-        super(message);
+        super("Duplicate resource error" + message);
     }
 
 
