@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    // For GET /api/customers/{id}/orders
     List<Order> findByCustomerId(Long customerId);
 }
