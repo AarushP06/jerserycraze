@@ -1,19 +1,22 @@
 package com.champsoft.jerserycrazedatabase.presentation.controller;
 import com.champsoft.jerserycrazedatabase.business.CustomerService;
+import com.champsoft.jerserycrazedatabase.dataaccess.entity.Customer;
 import com.champsoft.jerserycrazedatabase.presentation.dto.Customer.CustomerRequest;
 import com.champsoft.jerserycrazedatabase.presentation.dto.Customer.CustomerResponse;
 import com.champsoft.jerserycrazedatabase.presentation.mapper.CustomerMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.awt.print.Pageable;
 import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/customers")
 public class CustomerController {
-
     private final CustomerService customerService;
 
     public CustomerController(CustomerService customerService) {
@@ -22,12 +25,14 @@ public class CustomerController {
 
     @GetMapping
     public ResponseEntity<List<CustomerResponse>> getAll() {
+
         List<CustomerResponse> body = customerService.getAll()
                 .stream()
                 .map(CustomerMapper::toResponse)
                 .toList();
         return ResponseEntity.ok(body);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerResponse> getOne(@PathVariable Long id) {

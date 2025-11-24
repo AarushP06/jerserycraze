@@ -1,68 +1,48 @@
 package com.champsoft.jerserycrazedatabase.presentation.controller;
-import com.champsoft.jerserycrazedatabase.business.OrderService;
-import com.champsoft.jerserycrazedatabase.presentation.dto.Order.OrderRequest;
-import com.champsoft.jerserycrazedatabase.presentation.dto.Order.OrderResponse;
-import com.champsoft.jerserycrazedatabase.presentation.mapper.OrderMapper;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
+import com.champsoft.jerserycrazedatabase.dataaccess.entity.Order;
+import com.champsoft.jerserycrazedatabase.dataaccess.repository.OrderRepository;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api")
 public class OrderController {
+    private final OrderRepository repo;
 
-    private final OrderService orderService;
-
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
+    public OrderController(OrderRepository repo) {
+        this.repo = repo;
     }
 
-    @GetMapping
-    public ResponseEntity<List<OrderResponse>> getAll() {
-        List<OrderResponse> body = orderService.getAll()
-                .stream()
-                .map(OrderMapper::toResponse)
-                .toList();
-        return ResponseEntity.ok(body);
+    // list all orders
+    @GetMapping("/orders")
+    public List<Order> all() {
+        return repo.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOne(@PathVariable Long id) {
-        var order = orderService.getById(id);
-        OrderResponse body = OrderMapper.toResponse(order);
-        return ResponseEntity.ok(body);
+    // list orders by customer
+    @GetMapping("/customers/{customerId}/orders")
+    public List<Order> byCustomer(@PathVariable Long customerId) {
+        return repo.findByCustomerId(customerId);
     }
 
-    @PostMapping
-    public ResponseEntity<OrderResponse> create(@RequestBody OrderRequest request) {
-        var saved = orderService.create(request);
-        OrderResponse body = OrderMapper.toResponse(saved);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(saved.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(body);
+    // create
+    @PostMapping("/orders")
+    public Order create(@RequestBody Order o) {
+        return repo.save(o);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<OrderResponse> update(@PathVariable Long id,
-                                                @RequestBody OrderRequest request) {
-        var updated = orderService.update(id, request);
-        OrderResponse body = OrderMapper.toResponse(updated);
-        return ResponseEntity.ok(body);
+    // update
+    @PutMapping("/orders/{id}")
+    public Order update(@PathVariable Long id, @RequestBody Order o) {
+        o.setId(id);
+        return repo.save(o);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        orderService.delete(id);
-        return ResponseEntity.noContent().build();
+    // delete
+    @DeleteMapping("/orders/{id}")
+    public void delete(@PathVariable Long id) {
+        repo.deleteById(id);
     }
-
-
 }
