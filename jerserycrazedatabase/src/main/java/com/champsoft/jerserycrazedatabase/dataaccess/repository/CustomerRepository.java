@@ -1,11 +1,11 @@
 package com.champsoft.jerserycrazedatabase.dataaccess.repository;
 
 import com.champsoft.jerserycrazedatabase.dataaccess.entity.Customer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
-
-    List<Customer> findByEmail(String email);  // Find one customer by ID
-
+    Page<Customer> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+            String a, String b, String c, Pageable pageable);
 }

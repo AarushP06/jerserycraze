@@ -1,5 +1,6 @@
 package com.champsoft.jerserycrazedatabase.dataaccess.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +10,8 @@ import java.util.List;
         name = "customer",
         uniqueConstraints = @UniqueConstraint(name = "uk_customer_email", columnNames = "email")
 )
+@JsonIgnoreProperties({"orders"})
 public class Customer {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,6 +32,7 @@ public class Customer {
     private String password;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("customer")       // ← FIX: stop recursion
     private List<Order> orders = new ArrayList<>();
 
     public Customer() {
@@ -91,6 +93,4 @@ public class Customer {
     public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
-
-
 }

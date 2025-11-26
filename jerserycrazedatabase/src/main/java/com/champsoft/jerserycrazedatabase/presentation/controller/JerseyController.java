@@ -1,68 +1,52 @@
 package com.champsoft.jerserycrazedatabase.presentation.controller;
-import com.champsoft.jerserycrazedatabase.business.JerseyService;
-import com.champsoft.jerserycrazedatabase.presentation.dto.Jersey.JerseyRequest;
-import com.champsoft.jerserycrazedatabase.presentation.dto.Jersey.JerseyResponse;
-import com.champsoft.jerserycrazedatabase.presentation.mapper.JerseyMapper;
-import org.springframework.http.ResponseEntity;
+import com.champsoft.jerserycrazedatabase.dataaccess.entity.Jersey;
+import com.champsoft.jerserycrazedatabase.dataaccess.repository.JerseyRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/jerseys")
 public class JerseyController {
 
-    private final JerseyService jerseyService;
-
-    public JerseyController(JerseyService jerseyService) {
-        this.jerseyService = jerseyService;
-    }
+    private final JerseyRepository repo;
+    public JerseyController(JerseyRepository repo) { this.repo = repo; }
 
     @GetMapping
-    public ResponseEntity<List<JerseyResponse>> getAll() {
-        List<JerseyResponse> body = jerseyService.getAll()
-                .stream()
-                .map(JerseyMapper::toResponse)
-                .toList();
-        return ResponseEntity.ok(body);
+    public Page<Jersey> list(
+            @RequestParam(required = false) String q,
+            Pageable pageable
+    ) {
+        Pageable sorted = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("id").ascending()
+        );
+
+        if (q == null || q.isBlank()) {
+            return repo.findAll(sorted);
+        }
+
+        String s = q.trim();
+        return repo.findByNameContainingIgnoreCaseOrClubContainingIgnoreCaseOrderByIdAsc(
+                s, s, sorted
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JerseyResponse> getOne(@PathVariable Long id) {
-        var jersey = jerseyService.getById(id);
-        JerseyResponse body = JerseyMapper.toResponse(jersey);
-        return ResponseEntity.ok(body);
-    }
+    public Jersey get(@PathVariable Long id) { return repo.findById(id).orElseThrow(); }
 
     @PostMapping
-    public ResponseEntity<JerseyResponse> create(@RequestBody JerseyRequest request) {
-        var saved = jerseyService.create(request);
-        JerseyResponse body = JerseyMapper.toResponse(saved);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(saved.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(body);
-    }
+    public Jersey create(@RequestBody Jersey j) { return repo.save(j); }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JerseyResponse> update(@PathVariable Long id,
-                                                 @RequestBody JerseyRequest request) {
-        var updated = jerseyService.update(id, request);
-        JerseyResponse body = JerseyMapper.toResponse(updated);
-        return ResponseEntity.ok(body);
+    public Jersey update(@PathVariable Long id, @RequestBody Jersey j) {
+        j.setId(id);
+        return repo.save(j);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        jerseyService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
+    public void delete(@PathVariable Long id) { repo.deleteById(id); }
 }
