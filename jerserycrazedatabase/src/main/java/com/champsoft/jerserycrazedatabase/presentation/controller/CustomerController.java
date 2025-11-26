@@ -1,73 +1,56 @@
+// src/main/java/com/champsoft/jerserycrazedatabase/presentation/controller/CustomerController.java
 package com.champsoft.jerserycrazedatabase.presentation.controller;
-import com.champsoft.jerserycrazedatabase.business.CustomerService;
-import com.champsoft.jerserycrazedatabase.dataaccess.entity.Customer;
-import com.champsoft.jerserycrazedatabase.presentation.dto.Customer.CustomerRequest;
-import com.champsoft.jerserycrazedatabase.presentation.dto.Customer.CustomerResponse;
-import com.champsoft.jerserycrazedatabase.presentation.mapper.CustomerMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.awt.print.Pageable;
-import java.net.URI;
-import java.util.List;
+import com.champsoft.jerserycrazedatabase.dataaccess.entity.Customer;
+import com.champsoft.jerserycrazedatabase.dataaccess.repository.CustomerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 
 @RestController
 @RequestMapping("/api/customers")
 public class CustomerController {
-    private final CustomerService customerService;
 
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
+    private final CustomerRepository repo;
+    public CustomerController(CustomerRepository repo){ this.repo = repo; }
 
     @GetMapping
-    public ResponseEntity<List<CustomerResponse>> getAll() {
+    public Page<Customer> list(
+            @RequestParam(required = false) String q,
+            Pageable pageable
+    ) {
+        Pageable sorted = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("id").ascending()
+        );
 
-        List<CustomerResponse> body = customerService.getAll()
-                .stream()
-                .map(CustomerMapper::toResponse)
-                .toList();
-        return ResponseEntity.ok(body);
+        if (q == null || q.isBlank()) {
+            return repo.findAll(sorted);
+        }
+
+        String s = q.trim();
+        return repo.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                s, s, s, sorted
+        );
     }
-
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerResponse> getOne(@PathVariable Long id) {
-        var customer = customerService.getById(id);
-        CustomerResponse body = CustomerMapper.toResponse(customer);
-        return ResponseEntity.ok(body);
-    }
+    public Customer get(@PathVariable Long id){ return repo.findById(id).orElseThrow(); }
 
     @PostMapping
-    public ResponseEntity<CustomerResponse> create(@RequestBody CustomerRequest request) {
-        var saved = customerService.create(request);
-        CustomerResponse body = CustomerMapper.toResponse(saved);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(saved.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(body);
-    }
+    public Customer create(@RequestBody Customer c){ return repo.save(c); }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerResponse> update(@PathVariable Long id,
-                                                   @RequestBody CustomerRequest request) {
-        var updated = customerService.update(id, request);
-        CustomerResponse body = CustomerMapper.toResponse(updated);
-        return ResponseEntity.ok(body);
+    public Customer update(@PathVariable Long id, @RequestBody Customer c){
+        c.setId(id);
+        return repo.save(c);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        customerService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
+    public void delete(@PathVariable Long id){ repo.deleteById(id); }
 }

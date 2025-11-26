@@ -1,9 +1,11 @@
 package com.champsoft.jerserycrazedatabase.dataaccess.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
+@JsonIgnoreProperties({"order"})  // ← Prevent recursive loops
 public class OrderItem {
 
     @Id
@@ -12,10 +14,12 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
+    @JsonIgnoreProperties({"orderItems", "customer"})  // ← Stop recursion
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jersey_id", nullable = false)
+    @JsonIgnoreProperties({"orderItems"})  // Prevent loops with jersey
     private Jersey jersey;
 
     @Column(nullable = false)
@@ -66,6 +70,4 @@ public class OrderItem {
     public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }
-
-
 }

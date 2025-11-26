@@ -1,5 +1,6 @@
 package com.champsoft.jerserycrazedatabase.dataaccess.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -8,6 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
+@JsonIgnoreProperties({"customer", "orderItems"})
 public class Order {
 
     @Id
@@ -22,9 +24,11 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
+    @JsonIgnoreProperties("orders")        // ← FIX: stop recursion
     private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("order")         // Optional: prevents loop with OrderItem
     private List<OrderItem> orderItems = new ArrayList<>();
 
     public Order() {
@@ -77,6 +81,4 @@ public class Order {
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
     }
-
-
 }

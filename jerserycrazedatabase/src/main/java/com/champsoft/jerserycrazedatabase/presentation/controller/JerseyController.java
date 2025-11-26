@@ -2,7 +2,9 @@ package com.champsoft.jerserycrazedatabase.presentation.controller;
 import com.champsoft.jerserycrazedatabase.dataaccess.entity.Jersey;
 import com.champsoft.jerserycrazedatabase.dataaccess.repository.JerseyRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,10 +15,24 @@ public class JerseyController {
     public JerseyController(JerseyRepository repo) { this.repo = repo; }
 
     @GetMapping
-    public Page<Jersey> list(@RequestParam(required = false) String q, Pageable pageable) {
-        if (q == null || q.isBlank()) return repo.findAll(pageable);
+    public Page<Jersey> list(
+            @RequestParam(required = false) String q,
+            Pageable pageable
+    ) {
+        Pageable sorted = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("id").ascending()
+        );
+
+        if (q == null || q.isBlank()) {
+            return repo.findAll(sorted);
+        }
+
         String s = q.trim();
-        return repo.findByNameContainingIgnoreCaseOrClubContainingIgnoreCase(s, s, pageable);
+        return repo.findByNameContainingIgnoreCaseOrClubContainingIgnoreCaseOrderByIdAsc(
+                s, s, sorted
+        );
     }
 
     @GetMapping("/{id}")

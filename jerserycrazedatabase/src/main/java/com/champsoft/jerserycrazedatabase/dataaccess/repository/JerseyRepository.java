@@ -5,5 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JerseyRepository extends JpaRepository<Jersey, Long> {
-    Page<Jersey> findByNameContainingIgnoreCaseOrClubContainingIgnoreCase(String a, String b, Pageable pageable);
+    Page<Jersey> findByNameContainingIgnoreCaseOrClubContainingIgnoreCaseOrderByIdAsc(
+            String name, String club, Pageable pageable
+    );
 }
