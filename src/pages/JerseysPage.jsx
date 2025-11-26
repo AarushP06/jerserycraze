@@ -53,58 +53,56 @@ export default function JerseysPage(){
       </div>
 
       <div className="card">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Club</th>
-              <th>Size</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th style={{textAlign:"right"}}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(j=>(
-              <tr key={j.id}>
-                <td>
-                  <div style={{display:"flex",alignItems:"center",gap:12}}>
-                    <img
-                      className="thumb"
-                      src={ j.imageLink || j.image_link || `https://picsum.photos/seed/jersey-${j.id}/80/80` }
-                      alt={j.name}
-                    />
-                    <div>
-                      <div style={{fontWeight:600}}>{j.name}</div>
-                      <div style={{color:"var(--muted)",fontSize:12}}>{j.type}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>{j.club}</td>
-                <td>{j.size}</td>
-                <td>${Number(j.price).toFixed(2)}</td>
-                <td>
-                  <span className="badge" style={{borderColor: j.inStock ? "rgba(34,197,94,.35)" : "#3b1e24", color: j.inStock ? "#a7f3d0" : "#fecaca"}}>
-                    {j.inStock ? "In stock" : "Out"}
-                  </span>
-                </td>
-                <td style={{textAlign:"right"}}>
-                  <button onClick={()=>openEdit(j)}>Edit</button>{" "}
-                  <button className="btn-danger" onClick={()=>remove(j.id)}>Delete</button>
-                </td>
-              </tr>
-            ))}
-            {rows.length===0 && (
-              <tr><td colSpan="6" style={{padding:16,color:"var(--muted)"}}>No items</td></tr>
-            )}
-          </tbody>
-        </table>
+        <div className="jersey-grid">
+
+  {rows.map(j => (
+    <div className="jersey-card" key={j.id}>
+      
+      <img
+        className="jersey-image"
+        src={j.imageLink || j.image_link || `https://picsum.photos/seed/jersey-${j.id}/200/200`}
+        alt={j.name}
+      />
+
+      <div className="jersey-info">
+        <h3>{j.name}</h3>
+        <p>{j.club}</p>
+        <p>Size: {j.size}</p>
+        <p>Price: ${Number(j.price).toFixed(2)}</p>
+
+        <span className={`stock-badge ${j.inStock ? "in" : "out"}`}>
+          {j.inStock ? "In stock" : "Out"}
+        </span>
+      </div>
+
+      <div className="jersey-actions">
+        <button onClick={() => openEdit(j)}>Edit</button>
+        <button className="btn-danger" onClick={() => remove(j.id)}>Delete</button>
+      </div>
+
+    </div>
+  ))}
+
+  {rows.length === 0 && (
+    <p style={{ color: "var(--muted)", padding: 16 }}>No items</p>
+  )}
+  
+
+</div>
+
 
         <div className="pagination">
-          <button onClick={()=>setPage(p=>Math.max(0,p-1))}>Prev</button>
-          <span className="badge">Page {meta.page+1}</span>
-          <button onClick={()=>setPage(p=>Math.min(meta.totalPages-1, p+1))}>Next</button>
-        </div>
+  <button onClick={() => setPage(0)}>Back to Page 1</button>
+
+  <button onClick={() => setPage(p => Math.max(0, p - 1))}>Prev</button>
+
+  <span className="badge">Page {meta.page + 1}</span>
+
+  <button onClick={() => setPage(p => Math.min(meta.totalPages - 1, p + 1))}>
+    Next
+  </button>
+</div>
+
       </div>
 
       <Modal open={open} title={editing ? "Edit jersey" : "Add jersey"} onClose={()=>setOpen(false)} onSubmit={save} submitText="Save">

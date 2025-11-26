@@ -1,12 +1,21 @@
-import { http } from './http';
+import http from "./http";
 
-export const listCustomers = (page=0, size=5, search='') =>
-  http.get('/customers', { params: { page, size, search } });
+export function listCustomers(params) {
+  return http.get("/customers", { params });
+}
 
-export const getCustomer = (id) => http.get(`/customers/${id}`);
-export const getCustomerOrders = (id, page=0, size=5) =>
-  http.get(`/customers/${id}/orders`, { params: { page, size } });
+export function getCustomer(id) {
+  return http.get(`/customers/${id}`);
+}
 
-export const createCustomer = (data) => http.post('/customers', data);
-export const updateCustomer = (id, data) => http.put(`/customers/${id}`, data);
-export const deleteCustomer = (id) => http.delete(`/customers/${id}`);
+export function createCustomer(payload) {
+  return http.post("/customers", payload);
+}
+
+export function updateCustomer(id, payload) {
+  return http.put(`/customers/${id}`, payload);
+}
+
+export function deleteCustomer(id) {
+  return http.delete(`/customers/${id}`);
+}
