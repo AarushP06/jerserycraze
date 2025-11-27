@@ -94,9 +94,9 @@ cd backend
 3. Update database settings
 
 Edit:
-
+```
 src/main/resources/application.properties
-
+```
 
 Example:
 ```
@@ -143,7 +143,7 @@ http://localhost:5173
 Get all jerseys (paginated)
 GET /api/jerseys?page=0&size=5
 
-# Add a jersey
+### Add a jersey
 POST /api/jerseys
 
 ```
@@ -156,7 +156,7 @@ Body:
   "imageUrl": "https://..."
 }
 ```
-# Delete a jersey
+### Delete a jersey
 ```
 DELETE /api/jerseys/{id}
 ```
@@ -189,6 +189,6 @@ App works end-to-end.
 
 ### Team
 
-Aarush Patel
-Hadrian Gosset
+Aarush Patel,
+Hadrian Gosset,
 Liautaud Ryan Kaleb
