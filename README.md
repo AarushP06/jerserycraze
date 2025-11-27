@@ -88,22 +88,23 @@ Framework: Vite + React
 
 Folder structure:
 
+
 frontend/
- ├── src/
- │    ├── pages/
- │    ├── components/
- │    ├── api/
- │    ├── styles.css
- │    └── App.jsx
+ └── src/
+      ├── pages/
+      ├── components/
+      ├── api/
+      ├── styles.css
+      └── App.jsx
 
 backend/
- ├── src/
- │    ├── bootstrap/              # Data seeding (mock data)
- │    ├── business/               # Services + Mappers
- │    ├── config/                 # CORS + Swagger
- │    ├── dataaccess/             # Entities + Repositories
- │    ├── exceptions_utilities/   # Exception handling
- │    └── presentation/ 
+ └── src/
+      ├── bootstrap/          # Data seeding (mock data)
+      ├── business/           # Services + Mappers
+      ├── config/             # CORS + Swagger
+      ├── dataaccess/         # Entities + Repositories
+      ├── exceptions_utilities/# Exception handling
+      └── presentation/       # Controllers + DTOs
 
 The frontend uses Axios, environment variables, and a clean file structure.
 
