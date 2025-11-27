@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../api/http";
+import api from "../api/http.js";
 import Modal from "../components/Modal.jsx";
 import JerseyForm from "../components/JerseyForm.jsx";
 
