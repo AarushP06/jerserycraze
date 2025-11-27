@@ -19,49 +19,41 @@ export default function CustomersPage() {
   }, [q, page]);
 
   async function load() {
-    const res = await api.get("/customers", {
-      params: { q, page, size: PAGE_SIZE }
-    });
+    try {
+      const res = await api.get("/customers", {
+        params: { q, page, size: PAGE_SIZE }
+      });
 
-    const data = res.data;
-    const list = Array.isArray(data.content) ? data.content : [];
+      const data = res.data;
+      setRows(Array.isArray(data.content) ? data.content : []);
 
-    setRows(list);
-
-    setMeta({
-      page: data.number ?? 0,
-      totalPages: data.totalPages ?? 1
-    });
+      setMeta({
+        page: data.number ?? 0,
+        totalPages: data.totalPages ?? 1
+      });
+    } catch (err) {
+      console.error("LOAD ERROR:", err);
+    }
   }
 
   function openAdd() {
     setEditing(null);
-    setForm({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      address: "",
-      password: ""
-    });
+    setForm({ firstName: "", lastName: "", email: "", phone: "" });
     setOpen(true);
   }
 
   function openEdit(row) {
     setEditing(row);
-    setForm({
-      ...row,
-      address: row.address || "",
-      password: row.password || ""
-    });
+    setForm(row);
     setOpen(true);
   }
 
   async function save() {
-    if (editing) {
-      await api.put(`/customers/${editing.id}`, form);
-    } else {
-      await api.post("/customers", form);
+    try {
+      if (editing) await api.put(`/customers/${editing.id}`, form);
+      else await api.post("/customers", form);
+    } catch (err) {
+      console.error("SAVE ERROR:", err);
     }
     setOpen(false);
     load();
@@ -77,6 +69,7 @@ export default function CustomersPage() {
     <>
       <div className="page-head">
         <h1 className="h1">Customers</h1>
+
         <div className="toolbar">
           <input
             type="search"
@@ -91,47 +84,46 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      <div className="card">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th style={{ textAlign: "right" }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((c) => (
-              <tr key={c.id}>
-                <td>{c.firstName} {c.lastName}</td>
-                <td>{c.email}</td>
-                <td>{c.phone || "-"}</td>
-                <td style={{ textAlign: "right" }}>
-                  <button onClick={() => openEdit(c)}>Edit</button>{" "}
-                  <button className="btn-danger" onClick={() => remove(c.id)}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+      <div className="card-grid">
+        {rows.map(c => (
+          <div className="customer-card" key={c.id}>
+            <img
+              className="card-img"
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                `${c.firstName} ${c.lastName}`
+              )}&background=1f2937&color=fff&size=256`}
+              alt="avatar"
+            />
 
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan="4" style={{ padding: 16, color: "var(--muted)" }}>
-                  No items
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+            <h3 className="card-title">{c.firstName} {c.lastName}</h3>
+<div className="divider"></div>
+<p className="card-sub">{c.email}</p>
+<p className="card-sub">{c.phone || "No phone"}</p>
 
-        <div className="pagination">
-          <button onClick={() => setPage(0)}>Back to Page 1</button>
-          <button onClick={() => setPage((p) => Math.max(0, p - 1))}>Prev</button>
-          <span className="badge">Page {meta.page + 1}</span>
-          <button onClick={() => setPage((p) => Math.min(meta.totalPages - 1, p + 1))}>Next</button>
-        </div>
+            <div className="card-buttons">
+              <button onClick={() => openEdit(c)}>Edit</button>
+              <button className="btn-danger" onClick={() => remove(c.id)}>
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {rows.length === 0 && (
+          <div style={{ padding: 20, color: "var(--muted)" }}>No customers</div>
+        )}
+      </div>
+
+      <div className="pagination">
+        <button onClick={() => setPage(0)}>Back to Page 1</button>
+
+        <button onClick={() => setPage(p => Math.max(0, p - 1))}>Prev</button>
+
+        <span className="badge">Page {meta.page + 1}</span>
+
+        <button onClick={() => setPage(p => Math.min(meta.totalPages - 1, p + 1))}>
+          Next
+        </button>
       </div>
 
       <Modal

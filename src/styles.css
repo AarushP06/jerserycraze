@@ -193,3 +193,67 @@ button:active{transform:translateY(1px)}
   gap: 10px;
   margin-top: 14px;
 }
+
+/* Card grid shared with Jerseys */
+/* Grid layout: 5 per row */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+  width: 100%;
+}
+
+/* Customer card */
+.customer-card {
+  background: #111827;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.45);
+  transition: 0.2s ease;
+  height: 420px; /* SAME HEIGHT AS JERSEY CARDS */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Hover effect */
+.customer-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.6);
+}
+
+/* Avatar size (smaller + cleaner) */
+.card-img {
+  width: 100%;
+  height: 170px;      /* SAME AS YOUR JERSEY IMAGE */
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+/* Customer name */
+.card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: white;
+  margin: 5px 0 8px 0;
+}
+
+/* Email + phone */
+.card-sub {
+  color: #9ca3af;
+  margin: 2px 0;
+  font-size: 13px;
+}
+
+/* Button area */
+.card-buttons {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 16px;
+}
+
