@@ -2,224 +2,193 @@ Java Web Programming – 420-N34-LA – Fall 2025
 Instructor: Prof. Morteza Khanjanzadeh
 Term Project – Milestone 2
 Full-Stack Integration (React + Spring Boot + SQL Database)
+### Overview
 
-This project completes the requirements of Milestone 2, transforming the backend from Milestone 1 into a full end-to-end full-stack application with:
+Jersey Craze lets you:
 
-A modern React frontend
+View jerseys and customers
 
-A Spring Boot REST API
+Search
 
-A persistent SQL database
+Add
 
-Pagination, search, CRUD, and modal UI
+Edit
 
-Two modules (Parent + Child):
+Delete
 
-Customers (Parent)
+Use pagination (5 per page)
 
-Jerseys (Child)
+Store data in a real SQL database
 
-✔ Part 1 — SQL Database Implementation & Mock Data
-1. SQL Database Used
+Work with a clean dark UI
 
-This project uses MariaDB as the persistent relational database.
+Both pages use card layouts, modal forms, and API calls.
 
-Database Schema:
+### Project Structure
+```
+project-root/
+├── frontend/
+│   ├── src/
+│   │   ├── pages/          # Jersey + Customer pages
+│   │   ├── components/     # Cards, modals, forms
+│   │   ├── api/            # Axios API helpers
+│   │   ├── styles.css      # Main styles
+│   │   └── App.jsx         # Layout + routes
+│   └── package.json
+│
+└── backend/
+    ├── src/main/java/com/champsoft/jerserycrazedatabase/
+    │   ├── bootstrap/      # Data seeding
+    │   ├── business/       # Services + mappers
+    │   ├── config/         # CORS + Swagger
+    │   ├── dataaccess/     # Entities + repositories
+    │   ├── exceptions_utilities/ # Error handling
+    │   └── presentation/   # REST controllers
+    └── src/main/resources/
+        └── application.properties
+```
+### Tech Stack
+## Frontend
 
-Database name: jerseycraze
+React
 
-Connection configured in application.properties
+Vite
 
-2. Spring Boot SQL Configuration
+Axios
 
-H2 was removed, and Spring Boot now connects to MariaDB using:
+Custom modal system
 
-spring.datasource.url=jdbc:mariadb://localhost:3306/jerseycraze
-spring.datasource.username=postgres
-spring.datasource.password=123
+Dark UI with glass-style cards
+
+## Backend
+
+Spring Boot
+
+Spring Data JPA
+
+MySQL or MariaDB
+
+Swagger
+
+CORS setup
+
+### Database Requirements
+
+Your database must include:
+
+At least 10 customers
+
+At least 50 jerseys
+
+Valid links between data
+
+All CRUD working in Postman
+
+Tables created by JPA
+
+### Backend Setup
+1. Move into the backend folder
+cd backend
+
+2. Open the project in IntelliJ
+3. Update database settings
+
+Edit:
+
+src/main/resources/application.properties
+
+
+Example:
+```
+spring.datasource.url=jdbc:mysql://localhost:3306/jerseycraze
+spring.datasource.username=root
+spring.datasource.password=yourpassword
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+```
+4. Run the Spring Boot backend
 
+From IntelliJ or terminal:
+```bash
+./mvnw spring-boot:run
+```
 
-The backend starts with no errors, and tables are created automatically:
+API runs at:
 
-customer
+http://localhost:8080
 
-jersey
+### Frontend Setup
+1. Move into the frontend folder
+```bash
+cd frontend
+```
+2. Install dependencies
+ ```bash
+npm install
+```
+3. Create a .env file
+```bash
+VITE_API_URL=http://localhost:8080
+```
+4. Start the frontend
+```bash
+npm run dev
+```
 
-orders
+Frontend runs at:
+```
+http://localhost:5173
+```
+### API Examples
+Get all jerseys (paginated)
+GET /api/jerseys?page=0&size=5
 
-order_item
+# Add a jersey
+POST /api/jerseys
 
-3. Mock Data Inserted
+```
+Body:
 
-The database contains:
+{
+  "team": "Real Madrid",
+  "size": "M",
+  "price": 99.99,
+  "imageUrl": "https://..."
+}
+```
+# Delete a jersey
+```
+DELETE /api/jerseys/{id}
+```
+### Current Status
+Done
 
-✔ Customers (Parent Model)
+Backend with SQL
 
-10+ customer records
+Swagger
 
-Each includes name, email, address, password, and avatar
+Full CRUD
 
-✔ Jerseys (Child Model)
+Pagination
 
-50+ jersey records
+Search
 
-Each includes name, club, size, price, stock status, description, and image URL
+React pages for both sections
 
-4. Verification
+Add modal
 
-All API endpoints were tested in Postman, including:
+Edit modal
 
-GET (paginated)
+Delete actions
 
-POST (create)
+Clean dark UI
 
-PUT (update)
+Database integration
 
-DELETE (remove)
+App works end-to-end.
 
-All data returned successfully from MariaDB.
+### Team
 
-✔ Part 2 — React Frontend & Full-Stack Integration
-1. React Project Setup
-
-Framework: Vite + React
-
-Folder structure:
-
-
-frontend/
- └── src/
-      ├── pages/
-      ├── components/
-      ├── api/
-      ├── styles.css
-      └── App.jsx
-
-backend/
- └── src/
-      ├── bootstrap/          # Data seeding (mock data)
-      ├── business/           # Services + Mappers
-      ├── config/             # CORS + Swagger
-      ├── dataaccess/         # Entities + Repositories
-      ├── exceptions_utilities/# Exception handling
-      └── presentation/       # Controllers + DTOs
-
-The frontend uses Axios, environment variables, and a clean file structure.
-
-✔ 2. Main Layout — Two Sections (Parent + Child)
-
-A sidebar navigation controls two pages:
-
-Customers (Parent)
-Jerseys (Child)
-
-Switching tabs loads the corresponding React page.
-
-✔ 3. Customers Page (Parent List View)
-
-The Customers page includes:
-
-Paginated list (5 per page)
-
-Full card UI with:
-
-Avatar
-
-Full name
-
-Email
-
-Phone
-
-Search bar
-
-Add / Edit / Delete
-
-Modal forms
-
-Styled interactive UI
-
-CRUD behavior:
-
-Add → POST
-
-Edit → PUT
-
-Delete → DELETE
-
-Pagination:
-
-Prev
-
-Next
-
-Back to Page 1
-
-All customer data is loaded from the SQL backend through Spring Boot.
-
-✔ 4. Jerseys Page (Child List View)
-
-The Jerseys page includes:
-
-Grid of jersey cards (5 per row)
-
-Jersey image on top
-
-Club, size, price, stock badge
-
-Search bar
-
-Add / Edit / Delete
-
-Modal forms
-
-Pagination identical to customers
-
-This page uses the same logic as Customers but includes graphical content (images).
-
-✔ 5. Modal-Based CRUD Operations
-
-Both Customers and Jerseys use animated modal forms:
-
-Add → opens empty form
-
-Edit → loads existing selected data
-
-Delete → confirmation + backend request
-
-UI refreshes immediately after each operation.
-
-✔ 6. Parent Details View with Child List
-
-Although Customers and Jerseys are separate modules, customers display full details inside large card components, including:
-
-Avatar
-
-Name
-
-Email
-
-Phone
-
-This satisfies “detailed parent view” because each customer card displays full field data.
-
-✔ 7. Full-Stack Integration & Testing
-
-The following end-to-end flow works correctly:
-
-React → Axios → Spring Boot → SQL → React UI
-
-All components tested:
-
-Feature	Status
-CORS configured	✔
-Backend reachable from React	✔
-Pagination	✔
-Search	✔
-CRUD (POST/PUT/DELETE)	✔
-UI updates live	✔
-SQL database persistent	✔
-
-Both frontend and backend run without errors.
+Aarush Patel
+Hadrian Gosset
+Liautaud Ryan Kaleb
